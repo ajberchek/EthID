@@ -1,28 +1,6 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.11;
 
-library StringUtils {
-    /// @dev Does a byte-by-byte lexicographical comparison of two strings.
-    /// @return a negative number if `_a` is smaller, zero if they are equal
-    /// and a positive numbe if `_b` is smaller.
-    function compare(string _a, string _b) returns (int) {
-        bytes memory a = bytes(_a);
-        bytes memory b = bytes(_b);
-        uint minLength = a.length;
-        if (b.length < minLength) minLength = b.length;
-        //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
-        for (uint i = 0; i < minLength; i ++)
-            if (a[i] < b[i])
-                return -1;
-            else if (a[i] > b[i])
-                return 1;
-        if (a.length < b.length)
-            return -1;
-        else if (a.length > b.length)
-            return 1;
-        else
-            return 0;
-    }
-}
+
 
 contract EthID
 {
@@ -40,10 +18,16 @@ contract EthID
         quorum = toBeQuorum;
     }
 
+    modifier isQuorumMember(address addr)
+    {
+        require(present(quorum, addr) == true);
+        _;
+    }
+
     function present(address[] addrSet, address addr) public constant returns (bool)
     {
         // Return whether address was present
-        for (uint8 i = 0; i < addrSet.length; i++) 
+        for (uint8 i = 0; i < addrSet.length; i++)
         {
             if (addrSet[i] == addr) { return true; }
         }
@@ -51,10 +35,38 @@ contract EthID
         return false;
     }
 
-    modifier isQuorumMember(address addr)
+    /// @dev Does a byte-by-byte lexicographical comparison of two strings.
+    /// @return a negative number if `_a` is smaller, zero if they are equal
+    /// and a positive numbe if `_b` is smaller.
+    function strCompare(string _a, string _b) public constant returns (int)
     {
-        require(present(quorum, addr) == true);
-        _;
+        bytes memory a = bytes(_a);
+        bytes memory b = bytes(_b);
+        uint minLength = a.length;
+        if (b.length < minLength) minLength = b.length;
+        //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
+                return -1;
+            else if (a[i] > b[i])
+                return 1;
+        if (a.length < b.length)
+            return -1;
+        else if (a.length > b.length)
+            return 1;
+        else
+            return 0;
+    }
+
+    function getAddr(string name) public constant returns (address)
+    {
+        //return the address associated with the name and -1 if none
+        for (uint8 i = 0; i < EIDKeys.length; i++)
+        {
+            if (strCompare(EIDs[EIDKeys[i]], name) == 0) { return EIDKeys[i]; }
+        }
+
+        return address(0);
     }
 
     //TODO fix exploit:
@@ -87,9 +99,9 @@ contract EthID
         }
     }
 
-    function setTrustedEID(address[] addrs)
+    function setTrustedEID(address[] addrs) public
     {
-        if(StringUtils.compare(EIDs[msg.sender],"") != 0)
+        if(strCompare(EIDs[msg.sender],"") != 0)
         {
             address[] trustedManagers = trustedEIDManagers[msg.sender];
             if(trustedManagers.length == 0)
@@ -103,7 +115,7 @@ contract EthID
     {
         //Get addr's trustedEIDManagers, make sure the sender is in that list, and 
         //increment the number of people voting to remove and if it is majority then remove
-        if(StringUtils.compare(EIDs[addr],"") != 0)
+        if(strCompare(EIDs[addr],"") != 0)
         {
             address[] remSigs = EIDsToRemove[addr];
             address[] trusted = trustedEIDManagers[addr];
@@ -125,16 +137,4 @@ contract EthID
             }
         }
     }
-
-    function getAddr(string name) public constant returns (address)
-    {
-        //return the address associated with the name and -1 if none
-        for (uint8 i = 0; i < EIDKeys.length; i++) 
-        {
-            if (StringUtils.compare(EIDs[EIDKeys[i]], name) == 0) { return EIDKeys[i]; }
-        }
-
-        return address(0);
-    }
-
 }
