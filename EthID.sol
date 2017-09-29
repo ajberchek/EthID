@@ -34,19 +34,25 @@ contract EthID
 
     function addEID(address addr, string name) isQuorumMember(msg.sender) public
     {
-        if(getAddr(name) != address(0))
+        //Ensure the address we are suggesting isnt already an EID
+        if(getAddr(name) == address(0))
         {
+            //Verify the quorum member isnt already a suggester for this addr
             address[] signatures = EIDsToAdd[addr];
             if(present(signatures, msg.sender) == false)
             {
+                //Add them to the list of signatures
                 signatures.push(msg.sender);
                 if(2*signatures.length > quorum.length)
                 {
+                    //We have reached majority, add the addr and delete
+                    //this suggested list
                     EIDs[addr] = name;
                     delete EIDsToAdd[addr];
                 }
                 else
                 {
+                    //Reset the map to have this larger list of signatures
                     EIDsToAdd[addr] = signatures;
                 }
             }
