@@ -17,6 +17,12 @@ contract EthID
     function present(address[] addrSet, address addr) constant returns (bool)
     {
         //For loop to check presence of addr in addrSet
+        for (uint8 i = 0; i < addrSet.length; i++) {
+            if (addr == addrSet[i]) { return true; }
+        }
+
+        // The address was not present
+        return false;
     }
 
     modifier isQuorumMember(address addr)
