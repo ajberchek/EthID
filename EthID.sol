@@ -89,9 +89,13 @@ contract EthID
 
     function setTrustedEID(address[] addrs)
     {
-        if(EIDs[msg.sender] != 0 && trustedEIDManagers[msg.sender] == 0)
+        if(StringUtils.compare(EIDs[msg.sender],"") != 0)
         {
-            trustedEIDManagers[msg.sender] = addrs;
+            address[] trustedManagers = trustedEIDManagers[msg.sender];
+            if(trustedManagers.length == 0)
+            {
+                trustedEIDManagers[msg.sender] = addrs;
+            }
         }
     }
 
@@ -99,7 +103,7 @@ contract EthID
     {
         //Get addr's trustedEIDManagers, make sure the sender is in that list, and 
         //increment the number of people voting to remove and if it is majority then remove
-        if(EIDs[addr] != 0)
+        if(StringUtils.compare(EIDs[addr],"") != 0)
         {
             address[] remSigs = EIDsToRemove[addr];
             address[] trusted = trustedEIDManagers[addr];
