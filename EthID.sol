@@ -3,8 +3,12 @@ pragma solidity ^0.4.4;
 contract EthID
 {
     mapping (address => string) public EIDs;
+    mapping (address => address[]) EIDsToAdd;
+    mapping (address => address[]) EIDsToRemove;
+
     mapping (address => address[]) public trustedEIDManagers;
-    address[] quorum;
+
+    address[] public quorum;
 
     function EthID(address[] toBeQuorum) public {
         quorum = toBeQuorum;
