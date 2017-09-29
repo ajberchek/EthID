@@ -9,6 +9,7 @@ contract EthID
     mapping (address => address[]) public trustedEIDManagers;
 
     address[] public quorum;
+    address[] public EIDKeys;
 
     function EthID(address[] toBeQuorum) public 
     {
@@ -47,6 +48,7 @@ contract EthID
                 {
                     //We have reached majority, add the addr and delete
                     //this suggested list
+                    EIDKeys.push(addr);
                     EIDs[addr] = name;
                     delete EIDsToAdd[addr];
                 }
@@ -68,9 +70,9 @@ contract EthID
     function getAddr(string name) public constant returns (address)
     {
         //return the address associated with the name and -1 if none
-        for (uint8 i = 0; i < EIDs.length; i++) 
+        for (uint8 i = 0; i < EIDKeys.length; i++) 
         {
-            if (EIDs[i] == name) { return EIDs[i]; }
+            if (EIDs[EIDKeys[i]] == name) { return EIDs[i]; }
         }
         
         return address(0);
