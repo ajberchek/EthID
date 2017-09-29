@@ -27,15 +27,15 @@ library StringUtils {
 contract EthID
 {
     mapping (address => string) public EIDs;
-    mapping (address => address[]) EIDsToAdd;
-    mapping (address => address[]) EIDsToRemove;
+    mapping (address => address[]) public EIDsToAdd;
+    mapping (address => address[]) public EIDsToRemove;
 
     mapping (address => address[]) public trustedEIDManagers;
 
     address[] public quorum;
     address[] public EIDKeys;
 
-    function EthID(address[] toBeQuorum) public 
+    function EthID(address[] toBeQuorum) public
     {
         quorum = toBeQuorum;
     }
@@ -57,6 +57,8 @@ contract EthID
         _;
     }
 
+    //TODO fix exploit:
+    //Last signer can change name arbitrarily, store name as well as signers
     function addEID(address addr, string name) isQuorumMember(msg.sender) public
     {
         //Ensure the address we are suggesting isnt already an EID
@@ -85,10 +87,39 @@ contract EthID
         }
     }
 
+    function setTrustedEID(address[] addrs)
+    {
+        if(EIDs[msg.sender] != 0 && trustedEIDManagers[msg.sender] == 0)
+        {
+            trustedEIDManagers[msg.sender] = addrs;
+        }
+    }
+
     function removeEID(address addr) public
     {
         //Get addr's trustedEIDManagers, make sure the sender is in that list, and 
         //increment the number of people voting to remove and if it is majority then remove
+        if(EIDs[addr] != 0)
+        {
+            address[] remSigs = EIDsToRemove[addr];
+            address[] trusted = trustedEIDManagers[addr];
+            if(present(trusted,msg.sender) == true && present(remSigs,msg.sender) == false)
+            {
+                remSigs.push(msg.sender);
+                if(2*remSigs.length > trusted.length)
+                {
+                    //We have reached majority, add the addr and delete
+                    //this suggested list
+                    delete EIDs[addr];
+                    delete EIDsToRemove[addr];
+                }
+                else
+                {
+                    //Reset the map to have this larger list of signatures
+                    EIDsToRemove[addr] = remSigs;
+                }
+            }
+        }
     }
 
     function getAddr(string name) public constant returns (address)
@@ -98,7 +129,7 @@ contract EthID
         {
             if (StringUtils.compare(EIDs[EIDKeys[i]], name) == 0) { return EIDKeys[i]; }
         }
-        
+
         return address(0);
     }
 
