@@ -18,6 +18,8 @@ contract EthID
         quorum = toBeQuorum;
     }
 
+    event addedEID(address eid, string name);
+
     modifier isQuorumMember(address addr)
     {
         require(present(quorum, addr) == true);
@@ -88,6 +90,7 @@ contract EthID
                     //this suggested list
                     EIDKeys.push(addr);
                     EIDs[addr] = name;
+                    addedEID(addr,name);
                     delete EIDsToAdd[addr];
                 }
                 else
