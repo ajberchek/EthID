@@ -63,7 +63,6 @@ contract EthID
         }
     }
 
-<<<<<<< HEAD
     function setTrustedEID(address[] addrs)
     {
         if(EIDs[msg.sender] != 0 && trustedEIDManagers[msg.sender] == 0)
@@ -72,10 +71,7 @@ contract EthID
         }
     }
 
-    function removeEID(address addr)
-=======
     function removeEID(address addr) public
->>>>>>> baefd6c8b5dfa80a7cccdb21f4ee5451e55b9666
     {
         //Get addr's trustedEIDManagers, make sure the sender is in that list, and 
         //increment the number of people voting to remove and if it is majority then remove
@@ -105,11 +101,7 @@ contract EthID
     function getAddr(string name) public constant returns (address)
     {
         //return the address associated with the name and -1 if none
-<<<<<<< HEAD
-        for (uint8 i = 0; i < EIDs.length; i++)
-=======
         for (uint8 i = 0; i < EIDKeys.length; i++) 
->>>>>>> baefd6c8b5dfa80a7cccdb21f4ee5451e55b9666
         {
             if (EIDs[EIDKeys[i]] == name) { return EIDs[i]; }
         }
