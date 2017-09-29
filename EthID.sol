@@ -12,13 +12,8 @@ contract EthID
 
     function present(address[] addrSet, address addr) constant returns (bool)
     {
-        //For loop to check presence of addr in addrSet
-        for (uint8 i = 0; i < addrSet.length; i++) {
-            if (addr == addrSet[i]) { return true; }
-        }
-
-        // The address was not present
-        return false;
+        // Return whether address was present
+        return addrSet[addr].isValue;
     }
 
     modifier isQuorumMember(address addr)
@@ -38,9 +33,14 @@ contract EthID
         //increment the number of people voting to remove and if it is majority then remove
     }
 
-    function getAddr(string name)
+    function getAddr(string name) constant returns (address)
     {
         //return the address associated with the name and -1 if none
+        for (uint8 i = 0; i < EIDs.length; i++) {
+            if (EIDs[i] == name) { return true; }
+        }
+        
+        return address(0);
     }
 
 }
