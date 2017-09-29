@@ -3,3 +3,7 @@
 # EthID
 
 `truffle compile`, `truffle migrate`, `truffle test`
+
+## Intro to Blockchain:
+https://goo.gl/CX5R4G
+
