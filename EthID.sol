@@ -63,7 +63,7 @@ contract EthID
         //return the address associated with the name and -1 if none
         for (uint8 i = 0; i < EIDs.length; i++) 
         {
-            if (EIDs[i] == name) { return true; }
+            if (EIDs[i] == name) { return EIDs[i]; }
         }
         
         return address(0);
