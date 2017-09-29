@@ -15,7 +15,7 @@ contract EthID
         quorum = toBeQuorum;
     }
 
-    function present(address[] addrSet, address addr) constant returns (bool)
+    function present(address[] addrSet, address addr) public constant returns (bool)
     {
         // Return whether address was present
         for (uint8 i = 0; i < addrSet.length; i++) 
@@ -29,9 +29,10 @@ contract EthID
     modifier isQuorumMember(address addr)
     {
         require(present(quorum, addr) == true);
+        _;
     }
 
-    function addEID(address addr, string name) isQuorumMember(msg.sender)
+    function addEID(address addr, string name) isQuorumMember(msg.sender) public
     {
         if(getAddr(name) != address(0))
         {
@@ -52,13 +53,13 @@ contract EthID
         }
     }
 
-    function removeEID(address addr)
+    function removeEID(address addr) public
     {
         //Get addr's trustedEIDManagers, make sure the sender is in that list, and 
         //increment the number of people voting to remove and if it is majority then remove
     }
 
-    function getAddr(string name) constant returns (address)
+    function getAddr(string name) public constant returns (address)
     {
         //return the address associated with the name and -1 if none
         for (uint8 i = 0; i < EIDs.length; i++) 
