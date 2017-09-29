@@ -32,8 +32,23 @@ contract EthID
 
     function addEID(address addr, string name) isQuorumMember(msg.sender)
     {
-        //Add to a struct the count of quorum members voting to add someone
-        //if count is majority then add the EID
+        if(getAddr(name) != address(0))
+        {
+            address[] signatures = EIDsToAdd[addr];
+            if(present(signatures,msg.sender) == false)
+            {
+                signatures.push(msg.sender);
+                if(2*signatures.length > quorum.length)
+                {
+                    EIDs[addr] = name;
+                    delete EIDsToAdd[addr];
+                }
+                else
+                {
+                    EIDsToAdd[addr] = signatures;
+                }
+            }
+        }
     }
 
     function removeEID(address addr)
