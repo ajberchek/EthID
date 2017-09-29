@@ -32,7 +32,7 @@ contract EthID
 
     function addEID(address addr, string name) isQuorumMember(msg.sender)
     {
-        if(getAddr(name) != address(0))
+        if(getAddr(name) == address(0))
         {
             address[] signatures = EIDsToAdd[addr];
             if(present(signatures,msg.sender) == false)
