@@ -9,13 +9,14 @@ contract EthID
     mapping (address => address[]) public trustedEIDManagers;
 
     address[] public quorum;
+    address[] public EIDKeys;
 
     function EthID(address[] toBeQuorum) public
     {
         quorum = toBeQuorum;
     }
 
-    function present(address[] addrSet, address addr) constant returns (bool)
+    function present(address[] addrSet, address addr) public constant returns (bool)
     {
         // Return whether address was present
         for (uint8 i = 0; i < addrSet.length; i++) 
@@ -29,11 +30,12 @@ contract EthID
     modifier isQuorumMember(address addr)
     {
         require(present(quorum, addr) == true);
+        _;
     }
 
     //TODO fix exploit:
     //Last signer can change name arbitrarily, store name as well as signers
-    function addEID(address addr, string name) isQuorumMember(msg.sender)
+    function addEID(address addr, string name) isQuorumMember(msg.sender) public
     {
         //Ensure the address we are suggesting isnt already an EID
         if(getAddr(name) == address(0))
@@ -48,6 +50,7 @@ contract EthID
                 {
                     //We have reached majority, add the addr and delete
                     //this suggested list
+                    EIDKeys.push(addr);
                     EIDs[addr] = name;
                     delete EIDsToAdd[addr];
                 }
@@ -60,6 +63,7 @@ contract EthID
         }
     }
 
+<<<<<<< HEAD
     function setTrustedEID(address[] addrs)
     {
         if(EIDs[msg.sender] != 0 && trustedEIDManagers[msg.sender] == 0)
@@ -69,6 +73,9 @@ contract EthID
     }
 
     function removeEID(address addr)
+=======
+    function removeEID(address addr) public
+>>>>>>> baefd6c8b5dfa80a7cccdb21f4ee5451e55b9666
     {
         //Get addr's trustedEIDManagers, make sure the sender is in that list, and 
         //increment the number of people voting to remove and if it is majority then remove
@@ -95,12 +102,16 @@ contract EthID
         }
     }
 
-    function getAddr(string name) constant returns (address)
+    function getAddr(string name) public constant returns (address)
     {
         //return the address associated with the name and -1 if none
+<<<<<<< HEAD
         for (uint8 i = 0; i < EIDs.length; i++)
+=======
+        for (uint8 i = 0; i < EIDKeys.length; i++) 
+>>>>>>> baefd6c8b5dfa80a7cccdb21f4ee5451e55b9666
         {
-            if (EIDs[i] == name) { return EIDs[i]; }
+            if (EIDs[EIDKeys[i]] == name) { return EIDs[i]; }
         }
 
         return address(0);
