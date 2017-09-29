@@ -2,10 +2,12 @@ pragma solidity ^0.4.4;
 
 contract EthID
 {
-    address public owner;
+    mapping (address => string) public EIDs;
+    mapping (address => address[]) public trustedEIDManagers;
+    address[] quorum;
 
-    function EthID() public {
-        owner = msg.sender;
+    function EthID(address[] toBeQuorum) public {
+        quorum = toBeQuorum;
     }
 
 }
